@@ -350,7 +350,7 @@ export default function PropertyModal({ property, onClose }) {
               <SBValue>{p.consultas}</SBValue>
               <SBSub>{p.periodos}</SBSub>
               <SBDivider />
-              <SBCompLabel>Similares vendidas necesitaron</SBCompLabel>
+              <SBCompLabel>Similares {p.op === 'Alquiler' ? 'alquiladas' : 'vendidas'} necesitaron</SBCompLabel>
               <SBCompRow>
                 <SBCompVal>{insight.consultas}</SBCompVal>
                 <SBBadge $ok={consultasOk}>{consultasOk ? 'Normal' : 'Excedido'}</SBBadge>
@@ -362,7 +362,7 @@ export default function PropertyModal({ property, onClose }) {
               <SBValue>{p.visitasTokko}</SBValue>
               <SBSub>&nbsp;</SBSub>
               <SBDivider />
-              <SBCompLabel>Similares vendidas necesitaron</SBCompLabel>
+              <SBCompLabel>Similares {p.op === 'Alquiler' ? 'alquiladas' : 'vendidas'} necesitaron</SBCompLabel>
               <SBCompRow>
                 <SBCompVal>{insight.visitas}</SBCompVal>
                 <SBBadge $ok={visitasOk}>{visitasOk ? 'Normal' : 'Excedido'}</SBBadge>
@@ -374,7 +374,7 @@ export default function PropertyModal({ property, onClose }) {
               <SBValue>{p.diasPublicado}d</SBValue>
               <SBSub>&nbsp;</SBSub>
               <SBDivider />
-              <SBCompLabel>Similares vendidas tardaron</SBCompLabel>
+              <SBCompLabel>Similares {p.op === 'Alquiler' ? 'alquiladas' : 'vendidas'} tardaron</SBCompLabel>
               <SBCompRow>
                 <SBCompVal>{insight.dias}d</SBCompVal>
                 <SBBadge $ok={diasOk}>{diasOk ? 'Normal' : 'Excedido'}</SBBadge>
