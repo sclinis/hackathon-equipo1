@@ -8,10 +8,12 @@ Este doc no es una lista de prompts. Queremos ver cómo el equipo arquitecturó 
 
 | Capa | Qué usamos | Por qué eso y no otra cosa |
 | :---- | :---- | :---- |
-| Modelos | Claude Haiku (`claude-haiku-4-5`) en runtime; Claude Sonnet 4.6 para desarrollo | Haiku para el banner de insights: latencia baja y costo mínimo para análisis de portfolio en cada carga. Sonnet para desarrollo: razonamiento más profundo para arquitectura y algoritmos complejos |
-| IDE / agentic coding | Claude Code (Cowork) en loop completo durante toda la hackathon | Permitió iterar sobre componentes, algoritmos y datos sin salir del contexto del proyecto. El agente mantenía estado entre cambios y podía leer/editar/buildear de forma autónoma |
-| Orquestación / agents | Claude Agent SDK (base de Cowork) — single agent con tools de filesystem y shell | No necesitamos multi-agent: el scope era acotado y un agente con acceso a archivos y bash fue suficiente para todo el ciclo build → test → deploy |
+| Modelos | Claude Haiku (`claude-haiku-4-5`) en runtime; Claude Sonnet 4.6 para desarrollo; Gemini para mockups iniciales | Haiku para el banner de insights: latencia baja y costo mínimo para análisis de portfolio en cada carga. Sonnet para desarrollo: razonamiento más profundo para arquitectura y algoritmos complejos. Gemini para exploración visual rápida de UI antes de commitear una dirección de diseño |
+| IDE / agentic coding | Claude Code (Cowork) para el ciclo completo de desarrollo; Cursor para el scraper de datos | Claude Code mantuvo estado del proyecto completo entre cambios y ejecutó el ciclo build → test → deploy de forma autónoma. Cursor se usó puntualmente para generar el scraper de ZonaProp donde su integración con el browser facilitó la inspección del DOM |
+| Orquestación / agents | Claude Agent SDK (base de Cowork) — single agent con tools de filesystem y shell | No necesitamos multi-agent: el scope era acotado y un agente con acceso a archivos y bash fue suficiente para todo el ciclo |
 | MCPs usados | File tools (Read/Write/Edit), Bash (build, rsync, Node scripts) | Necesitábamos acceso real al filesystem para generar código, transformar datos JSON, correr builds de Next.js y sincronizar al workspace del usuario |
+| Generación de assets | Gemini + Imagen (Nano Banana) para el logo de TermoProp | Iteración rápida sobre conceptos visuales (llave + termómetro) sin necesidad de un diseñador gráfico. El logo final fue generado en minutos y exportado como SVG |
+| Dataset real | Cursor + scraper de ZonaProp (Python/Playwright) | Se scrapearon 90 avisos reales con fotos, precios y métricas directamente del portal. Cursor aceleró la escritura del scraper al entender el contexto del DOM de ZonaProp |
 | Skills custom | Ninguna construida para esta hackathon | El flujo fue lo suficientemente lineal como para no necesitar encapsulamiento en skills |
 | RAG / búsqueda | No aplicó | Los datos del portfolio (90 avisos, 110 operaciones cerradas) caben en el context window de una llamada. Sin necesidad de retrieval |
 | Evals / testing de IA | Validación manual del output JSON + regex fallback en código | En hackathon de 1 día priorizamos velocidad. El guardrail de extracción por regex cubre el caso más común de fallo |
@@ -76,27 +78,39 @@ Render InsightRow × 3 con animación fadeIn
 
 ### IA en el proceso de desarrollo
 
-Todo el desarrollo ocurrió dentro de una sesión de Claude Code (Cowork). El flujo fue:
+El equipo usó **múltiples herramientas de IA en distintas fases del día**, cada una donde tenía ventaja comparativa:
+
+**Fase 1 — Exploración y diseño (Gemini + Imagen / Nano Banana)**
+Antes de escribir una línea de código, se usó Gemini para generar los primeros mockups del dashboard: distintas disposiciones de la tabla, el modal de detalle y el banner de insights. Esto permitió alinear al equipo en dirección visual en minutos sin depender de wireframes manuales. El logo de TermoProp (llave + termómetro) fue generado con Imagen (Nano Banana), iterando sobre variaciones del concepto hasta llegar al ícono naranja/rojo que quedó en el producto final.
+
+**Fase 2 — Dataset real (Cursor + scraper de ZonaProp)**
+Para tener datos reales en lugar de mocks inventados, se usó Cursor para generar un scraper en Python/Playwright que navegó ZonaProp y extrajo 90 avisos reales: títulos, direcciones, precios, métricas de actividad y URLs de fotos directamente del CDN (`imgar.zonapropcdn.com`). Cursor fue la herramienta elegida para esta tarea por su integración con el browser, que facilitó la inspección del DOM del portal en vivo mientras se escribía el scraper.
+
+**Fase 3 — Desarrollo del producto (Claude Code / Cowork)**
+Todo el ciclo de construcción del frontend ocurrió dentro de Claude Code. El flujo fue:
 
 1. **Humano define el qué** — "quiero un dashboard de temperatura de cartera con estos campos", "el popup quedó muy ancho, revertilo", "levantá los datos del JSON real"
 2. **Agente ejecuta el cómo** — lee los archivos existentes, decide qué cambiar, edita, buildea con `npm run build`, verifica que compile, sincroniza al workspace con `rsync`
 3. **Humano revisa el resultado** — abre el `index.html`, reporta lo que no le gustó
 4. **Loop hasta satisfacción**
 
-El agente mantenía el estado del proyecto completo en contexto (estructura de archivos, componentes, algoritmos) y podía razonar sobre efectos secundarios antes de editar. Por ejemplo, cuando se reemplazaron las fotos de Unsplash por las del CDN de ZonaProp, el agente detectó que `photos.js` era el punto de acoplamiento y propuso mover la foto al objeto de la propiedad directamente, eliminando la indirección.
+El agente mantenía el estado del proyecto completo en contexto y podía razonar sobre efectos secundarios antes de editar. Por ejemplo, cuando se integraron los datos reales del scraper, el agente detectó que `photos.js` era el punto de acoplamiento y propuso mover la foto al objeto de la propiedad directamente, eliminando la indirección.
 
 **División del trabajo:**
 
-| Tarea | Humano | Agente |
-|---|---|---|
-| Decisiones de producto (qué mostrar, cómo priorizar) | ✅ | |
-| Arquitectura del algoritmo de scoring | 🤝 debate | 🤝 implementación |
-| Código de componentes React/Styled Components | | ✅ |
-| Transformación de datos JSON (90 listings → schema app) | | ✅ |
-| Generación del dataset de operaciones cerradas (110 registros) | | ✅ |
-| Diseño del prompt para Claude Haiku | 🤝 criterios | 🤝 redacción |
-| QA visual / feedback de UX | ✅ | |
-| Build, rsync, deploy estático | | ✅ |
+| Tarea | Herramienta / Actor |
+|---|---|
+| Mockups iniciales de UI | Gemini |
+| Logo del producto | Imagen (Nano Banana) |
+| Scraper de datos reales de ZonaProp | Cursor |
+| Decisiones de producto (qué mostrar, cómo priorizar) | Humano |
+| Arquitectura del algoritmo de scoring | 🤝 Humano + Claude Code |
+| Código de componentes React/Styled Components | Claude Code |
+| Transformación de datos JSON (90 listings → schema app) | Claude Code |
+| Generación del dataset de operaciones cerradas (110 registros) | Claude Code |
+| Diseño del prompt para Claude Haiku | 🤝 Humano + Claude Code |
+| QA visual / feedback de UX | Humano |
+| Build, rsync, deploy estático | Claude Code |
 
 ---
 
