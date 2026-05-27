@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 import historicalClosings from '../../data/historicalClosings';
@@ -125,7 +125,7 @@ const TokkoSection = styled.div`
 `;
 
 const TokkoLogo = styled.img`
-  height: 28px; width: auto; display: block; margin-bottom: 12px;
+  height: 32px; width: auto; display: block; margin-bottom: 12px;
 `;
 
 const TokkoActions = styled.div`
@@ -143,51 +143,43 @@ const TokkoCardIcon = styled.div`font-size: 20px; margin-bottom: 5px;`;
 const TokkoCardLabel = styled.div`font-size: 11px; font-weight: 700; color: #222; line-height: 1.3;`;
 const TokkoCardSub   = styled.div`font-size: 10px; color: #aaa; margin-top: 2px;`;
 
-/* ── CONSEJOS ACCORDION ───────────────────────────────────────────────── */
+/* ── CONSEJOS FLAT ────────────────────────────────────────────────────── */
 const ConsejosSectionTitle = styled.div`
   font-size: 10px; font-weight: 700; text-transform: uppercase;
   letter-spacing: .6px; color: #bbb; margin-bottom: 8px;
 `;
 
-const AccordionList = styled.div`display: flex; flex-direction: column; gap: 6px;`;
+const TipsList = styled.div`display: flex; flex-direction: column; gap: 8px;`;
 
-const AccordionItem = styled.div`
-  border-radius: 10px; overflow: hidden;
-  border: 1px solid ${p => p.$border || '#C8E0F8'};
-  background: ${p => p.$bg || '#F0F7FF'};
+const TipRow = styled.div`
+  display: flex; align-items: flex-start; gap: 10px;
+  background: ${p => p.$bg || '#EFF8FF'};
+  border: 1px solid ${p => p.$border || '#B8D9F8'};
+  border-radius: 10px; padding: 12px 14px;
 `;
 
-const AccordionHeader = styled.button`
-  width: 100%; display: flex; align-items: center; justify-content: space-between;
-  padding: 11px 14px; background: transparent; border: none; cursor: pointer;
-  text-align: left; gap: 10px;
-`;
-
-const AccordionHeaderLeft = styled.div`display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;`;
-const AccordionDot = styled.div`
-  width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+const TipIcon = styled.div`
+  width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  font-size: 11px;
+  font-size: 14px;
   background: ${p => p.$bg};
 `;
-const AccordionTitle = styled.div`
-  font-size: 12px; font-weight: 700; color: ${p => p.$color || '#1A4A7A'};
-`;
-const AccordionChevron = styled.div`
-  font-size: 11px; color: #bbb; flex-shrink: 0;
-  transform: ${p => p.$open ? 'rotate(180deg)' : 'rotate(0)'};
-  transition: transform .2s;
+
+const TipContent = styled.div`flex: 1; min-width: 0;`;
+
+const TipTitle = styled.div`
+  font-size: 12px; font-weight: 700; color: ${p => p.$color || '#174E80'};
+  margin-bottom: 3px;
 `;
 
-const AccordionBody = styled.div`
-  padding: 0 14px 12px 40px;
-  font-size: 12px; line-height: 1.5; color: ${p => p.$color || '#1A4A7A'};
+const TipText = styled.div`
+  font-size: 12px; line-height: 1.45; color: ${p => p.$color || '#174E80'};
   strong { font-weight: 700; }
 `;
 
-const AccordionAction = styled.span`
-  display: inline-block; margin-top: 6px;
-  font-size: 11px; font-weight: 700; color: ${p => p.$color};
+const TipAction = styled.span`
+  display: inline-block; margin-top: 5px;
+  font-size: 11px; font-weight: 700; color: ${p => p.$color || '#1060B0'};
   cursor: pointer;
   &:hover { text-decoration: underline; }
 `;
@@ -196,9 +188,9 @@ const AccordionAction = styled.span`
 const heatLabel = { hot: '🔥 Muy caliente', warm: '🌡️ Templado', cold: '❄️ Frío' };
 
 const tipTheme = {
-  hot:  { bg: '#FFF8F5', border: '#FFD4B8', dot: '#E85A00', dotBg: '#FFE8D5', text: '#7A2E00', strong: '#5A1E00', action: '#C03000' },
-  warm: { bg: '#FFFBEE', border: '#FFE8A0', dot: '#C08000', dotBg: '#FFF3CC', text: '#6B4800', strong: '#4A3000', action: '#A06000' },
-  cold: { bg: '#F0F7FF', border: '#C8E0F8', dot: '#4A90D9', dotBg: '#D8ECFF', text: '#1A4A7A', strong: '#0D3A66', action: '#1E6AAF' },
+  hot:  { bg: '#EFF8FF', border: '#B8D9F8', dot: '#2878C8', dotBg: '#D0E8F8', text: '#174E80', strong: '#0D3660', action: '#1060B0' },
+  warm: { bg: '#EFF8FF', border: '#B8D9F8', dot: '#2878C8', dotBg: '#D0E8F8', text: '#174E80', strong: '#0D3660', action: '#1060B0' },
+  cold: { bg: '#EFF8FF', border: '#B8D9F8', dot: '#2878C8', dotBg: '#D0E8F8', text: '#174E80', strong: '#0D3660', action: '#1060B0' },
 };
 
 const planRank = { simple: 0, destacado: 1, super: 2 };
@@ -299,7 +291,6 @@ function getTips(p) {
 }
 
 export default function PropertyModal({ property, onClose }) {
-  const [openTips, setOpenTips] = useState({});
 
   useEffect(() => {
     const handler = e => { if (e.key === 'Escape') onClose(); };
@@ -321,8 +312,6 @@ export default function PropertyModal({ property, onClose }) {
   const consultasOk  = p.consultas  >= insight.consultas;
   const visitasOk    = p.visitasTokko >= insight.visitas;
   const diasOk       = p.diasPublicado <= insight.dias * 1.1;
-
-  const toggleTip = i => setOpenTips(prev => ({ ...prev, [i]: !prev[i] }));
 
   return (
     <Overlay onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
@@ -395,7 +384,7 @@ export default function PropertyModal({ property, onClose }) {
 
           {/* Tokko Broker section */}
           <TokkoSection>
-            <TokkoLogo src="/tokko-broker-logo.svg" alt="Tokko Broker" />
+            <TokkoLogo src="/tokko-broker-logo.png" alt="Tokko Broker" />
             <TokkoActions>
               <TokkoCard>
                 <TokkoCardIcon>📅</TokkoCardIcon>
@@ -415,28 +404,22 @@ export default function PropertyModal({ property, onClose }) {
             </TokkoActions>
           </TokkoSection>
 
-          {/* Consejos accordion */}
+          {/* Consejos TermoProp */}
           <ConsejosSectionTitle>Consejos TermoProp</ConsejosSectionTitle>
-          <AccordionList>
+          <TipsList>
             {tips.map((t, i) => (
-              <AccordionItem key={i} $bg={theme.bg} $border={theme.border}>
-                <AccordionHeader onClick={() => toggleTip(i)}>
-                  <AccordionHeaderLeft>
-                    <AccordionDot $bg={theme.dotBg}>{t.icon}</AccordionDot>
-                    <AccordionTitle $color={theme.text}>{t.title}</AccordionTitle>
-                  </AccordionHeaderLeft>
-                  <AccordionChevron $open={openTips[i]}>▾</AccordionChevron>
-                </AccordionHeader>
-                {openTips[i] && (
-                  <AccordionBody $color={theme.text}>
+              <TipRow key={i} $bg={theme.bg} $border={theme.border}>
+                <TipIcon $bg={theme.dotBg}>{t.icon}</TipIcon>
+                <TipContent>
+                  <TipTitle $color={theme.text}>{t.title}</TipTitle>
+                  <TipText $color={theme.text}>
                     {t.text}
-                    <br />
-                    <AccordionAction $color={theme.action}>{t.action}</AccordionAction>
-                  </AccordionBody>
-                )}
-              </AccordionItem>
+                  </TipText>
+                  <TipAction $color={theme.action}>{t.action}</TipAction>
+                </TipContent>
+              </TipRow>
             ))}
-          </AccordionList>
+          </TipsList>
         </Body>
       </Modal>
     </Overlay>
