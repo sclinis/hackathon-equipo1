@@ -113,8 +113,8 @@ const SBCompRow = styled.div`display: flex; align-items: center; gap: 5px;`;
 const SBCompVal = styled.span`font-size: 14px; font-weight: 700; color: #222;`;
 const SBBadge = styled.span`
   font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 5px;
-  background: ${p => p.$ok ? '#E8F5E9' : '#FFF0E8'};
-  color: ${p => p.$ok ? '#2E7D32' : '#C03000'};
+  background: ${p => p.$ok ? '#FFF0E8' : '#E8F5E9'};
+  color: ${p => p.$ok ? '#C03000' : '#2E7D32'};
 `;
 
 /* ── SECCIÓN TOKKO ────────────────────────────────────────────────────── */

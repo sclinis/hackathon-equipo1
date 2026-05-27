@@ -1303,7 +1303,7 @@
       "fechaCierre": "2024-08-17",
       "diasHastaCierre": 35,
       "consultasAlCierre": 15,
-      "visitasAlCierre": 6,
+      "visitasAlCierre": 13,
       "consultasPorSemana": 3
     },
     {
@@ -1383,7 +1383,7 @@
       "fechaCierre": "2024-08-06",
       "diasHastaCierre": 12,
       "consultasAlCierre": 5,
-      "visitasAlCierre": 2,
+      "visitasAlCierre": 12,
       "consultasPorSemana": 3.2
     },
     {
@@ -1443,7 +1443,7 @@
       "fechaCierre": "2024-07-26",
       "diasHastaCierre": 13,
       "consultasAlCierre": 18,
-      "visitasAlCierre": 7,
+      "visitasAlCierre": 14,
       "consultasPorSemana": 9.5
     },
     {
