@@ -232,9 +232,10 @@ El output queda en `out/`. Abrir `out/index.html` directamente en el navegador �
 
 ## 🎯 Próximos pasos
 
-1. **Conexión con webhooks reales:** sustituir los JSON estáticos por conexiones a las APIs de producción de Tokko y ZonaProp.
-2. **Fórmula auto-ajustable:** hacer que el modelo aprenda de las transacciones efectivamente cerradas para auto-configurar los pesos del algoritmo sin intervención manual.
-3. **Normalización cross-currency:** calcular conversión ARS/USD en tiempo real para comparables entre segmentos de precio mixtos.
+1. **Integración nativa en Tokko Broker:** embeber el panel de TermoProp directamente en la sección de Difusión de Tokko, para que el agente vea el Hot Score y los comparables sin salir de su flujo de trabajo habitual.
+2. **Conexión con webhooks reales:** sustituir los JSON estáticos por conexiones a las APIs de producción de Tokko y ZonaProp.
+3. **Fórmula auto-ajustable:** hacer que el modelo aprenda de las transacciones efectivamente cerradas para auto-configurar los pesos del algoritmo sin intervención manual.
+4. **Normalización cross-currency:** calcular conversión ARS/USD en tiempo real para comparables entre segmentos de precio mixtos.
 
 ---
 
