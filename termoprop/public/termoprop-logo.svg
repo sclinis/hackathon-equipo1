@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" width="200" height="260">
+  <!-- Key head ring -->
+  <circle cx="100" cy="62" r="52" fill="#D94F0A"/>
+  <circle cx="100" cy="62" r="32" fill="white"/>
+
+  <!-- Key stem -->
+  <rect x="88" y="110" width="24" height="115" rx="4" fill="#D94F0A"/>
+
+  <!-- Key teeth (3 horizontal bars on left) -->
+  <rect x="52" y="148" width="36" height="13" rx="3" fill="#D94F0A"/>
+  <rect x="46" y="170" width="42" height="13" rx="3" fill="#D94F0A"/>
+  <rect x="52" y="192" width="36" height="13" rx="3" fill="#D94F0A"/>
+
+  <!-- Key bottom notch (right side arrow/tooth) -->
+  <polygon points="112,195 140,213 112,225" fill="#D94F0A"/>
+
+  <!-- Thermometer tube (inside stem) -->
+  <rect x="95" y="115" width="10" height="95" rx="5" fill="white"/>
+  <rect x="97" y="145" width="6" height="65" rx="3" fill="#CC0000"/>
+
+  <!-- Thermometer bulb -->
+  <circle cx="100" cy="222" r="17" fill="#D94F0A"/>
+  <circle cx="100" cy="222" r="11" fill="white"/>
+  <circle cx="100" cy="222" r="8" fill="#CC0000"/>
+</svg>

@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ZonaProp – Estadísticas / TermoProp</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; color: #333; font-size: 14px; }
+
+    /* ─── TOP NAV ─────────────────────────────────────────────────────── */
+    .topnav {
+      background: #fff;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      height: 56px;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+    .topnav .logo { display: flex; align-items: center; gap: 8px; margin-right: 36px; }
+    .topnav .logo img { height: 32px; }
+    .topnav .logo-text { font-size: 22px; font-weight: 700; color: #FF5A00; letter-spacing: -0.5px; }
+    .topnav nav { display: flex; gap: 0; }
+    .topnav nav a {
+      padding: 0 16px;
+      height: 56px;
+      display: flex; align-items: center;
+      text-decoration: none; color: #555; font-size: 14px; font-weight: 500;
+      border-bottom: 3px solid transparent;
+      transition: all .15s;
+    }
+    .topnav nav a:hover { color: #FF5A00; }
+    .topnav nav a.active { color: #FF5A00; border-bottom-color: #FF5A00; font-weight: 600; }
+    .topnav .badge {
+      background: #FF5A00; color: #fff; border-radius: 10px;
+      font-size: 10px; font-weight: 700; padding: 1px 5px; margin-left: 4px;
+    }
+    .topnav .right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+    .topnav .right .btn-pub {
+      background: #FF5A00; color: #fff; border: none; border-radius: 6px;
+      padding: 8px 18px; font-size: 14px; font-weight: 600; cursor: pointer;
+    }
+    .topnav .right .avatar {
+      width: 34px; height: 34px; border-radius: 50%; background: #FF5A00;
+      color: #fff; font-weight: 700; font-size: 15px;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid #FF5A00;
+    }
+
+    /* ─── LAYOUT ─────────────────────────────────────────────────────── */
+    .layout { display: flex; min-height: calc(100vh - 56px); }
+
+    /* ─── SIDEBAR ────────────────────────────────────────────────────── */
+    .sidebar {
+      width: 240px; min-width: 240px;
+      background: #fff;
+      border-right: 1px solid #e8e8e8;
+      padding: 20px 0;
+    }
+    .sidebar .agency-card {
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 20px 20px;
+      border-bottom: 1px solid #f0f0f0;
+      margin-bottom: 8px;
+    }
+    .sidebar .agency-logo {
+      width: 44px; height: 44px; border-radius: 8px;
+      background: #8B1A1A; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; text-align: center; line-height: 1.2;
+    }
+    .sidebar .agency-name { font-weight: 600; font-size: 14px; color: #333; }
+    .sidebar nav a {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 20px;
+      text-decoration: none; color: #555; font-size: 14px;
+      border-left: 3px solid transparent;
+      transition: all .15s;
+    }
+    .sidebar nav a:hover { background: #fff5f0; color: #FF5A00; }
+    .sidebar nav a.active {
+      background: #fff5f0; color: #FF5A00;
+      border-left-color: #FF5A00; font-weight: 600;
+    }
+    .sidebar nav a svg { opacity: .7; }
+    .sidebar nav a.active svg { opacity: 1; }
+
+    /* ─── MAIN ────────────────────────────────────────────────────────── */
+    .main { flex: 1; padding: 28px 32px; max-width: 1100px; }
+
+    /* ─── PAGE HEADER ─────────────────────────────────────────────────── */
+    .page-header { margin-bottom: 20px; }
+    .page-header h1 {
+      font-size: 22px; font-weight: 700; color: #222;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .page-header .sub { color: #888; font-size: 13px; margin-top: 4px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .page-header .sub svg { color: #aaa; }
+
+    /* ─── HEAT CARDS ─────────────────────────────────────────────────── */
+    .heat-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+    .heat-card {
+      border-radius: 14px;
+      padding: 0;
+      overflow: hidden;
+      border: 1.5px solid transparent;
+      transition: transform .18s, box-shadow .18s;
+    }
+    .heat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,.10); }
+
+    /* tinted backgrounds — opción B */
+    .heat-card.hot  { background: #FFF0E8; border-color: #FFCDB0; }
+    .heat-card.warm { background: #FFF8E0; border-color: #FFE49A; }
+    .heat-card.cold { background: #E8F3FF; border-color: #B0D4F8; }
+
+    .heat-card-inner { padding: 22px 24px 18px; }
+    .heat-card .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+    .heat-card .icon { font-size: 28px; line-height: 1; }
+    .heat-card .badge-pill {
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 700; white-space: nowrap;
+    }
+    .heat-card.hot  .badge-pill { background: #FFCDB0; color: #B83000; }
+    .heat-card.warm .badge-pill { background: #FFE49A; color: #8A5500; }
+    .heat-card.cold .badge-pill { background: #B0D4F8; color: #0D4E8A; }
+
+    .heat-card .info .count {
+      font-size: 46px; font-weight: 900; line-height: 1;
+    }
+    .heat-card.hot  .info .count { color: #C03000; }
+    .heat-card.warm .info .count { color: #A05800; }
+    .heat-card.cold .info .count { color: #0D5EA8; }
+
+    .heat-card .info .label {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .7px; margin-top: 5px;
+    }
+    .heat-card.hot  .info .label { color: #C03000; }
+    .heat-card.warm .info .label { color: #A05800; }
+    .heat-card.cold .info .label { color: #0D5EA8; }
+
+    .heat-card .info .desc { font-size: 11px; margin-top: 2px; }
+    .heat-card.hot  .info .desc { color: #D4703A; }
+    .heat-card.warm .info .desc { color: #B07820; }
+    .heat-card.cold .info .desc { color: #4480B8; }
+
+    /* mini photo strip */
+    .heat-card .photo-strip {
+      display: flex; gap: 4px; margin-top: 14px; padding-top: 14px;
+    }
+    .heat-card.hot  .photo-strip { border-top: 1px solid #FFCDB0; }
+    .heat-card.warm .photo-strip { border-top: 1px solid #FFE49A; }
+    .heat-card.cold .photo-strip { border-top: 1px solid #B0D4F8; }
+
+    .heat-card .photo-strip img {
+      width: 52px; height: 38px; border-radius: 6px; object-fit: cover;
+      flex-shrink: 0; border: 1.5px solid rgba(0,0,0,.07);
+    }
+    .heat-card .photo-strip .more-count {
+      width: 52px; height: 38px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0;
+    }
+    .heat-card.hot  .photo-strip .more-count { background: #FFCDB0; color: #B83000; }
+    .heat-card.warm .photo-strip .more-count { background: #FFE49A; color: #8A5500; }
+    .heat-card.cold .photo-strip .more-count { background: #B0D4F8; color: #0D4E8A; }
+
+    /* ─── FILTERS ─────────────────────────────────────────────────────── */
+    .filters-bar {
+      background: #fff; border-radius: 10px; border: 1px solid #eee;
+      padding: 14px 20px; margin-bottom: 18px;
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    .filters-bar .filter-label { font-size: 13px; color: #666; font-weight: 500; margin-right: 4px; }
+    .filters-bar select, .filters-bar input {
+      border: 1px solid #ddd; border-radius: 6px;
+      padding: 6px 10px; font-size: 13px; color: #333; background: #fafafa;
+      cursor: pointer;
+    }
+    .filters-bar select:focus, .filters-bar input:focus { outline: 2px solid #FF5A00; border-color: #FF5A00; }
+    .filters-bar .sep { height: 24px; width: 1px; background: #eee; }
+    .filters-bar .tag-filter {
+      display: flex; gap: 6px;
+    }
+    .filters-bar .tag {
+      padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+      cursor: pointer; border: 1.5px solid transparent; transition: all .15s;
+    }
+    .filters-bar .tag.all   { background: #FF5A00; color: #fff; }
+    .filters-bar .tag.hot   { background: #FFF0E8; color: #E8400C; border-color: #f9c3a8; }
+    .filters-bar .tag.warm  { background: #FFFBEA; color: #D4820A; border-color: #f9e8a0; }
+    .filters-bar .tag.cold  { background: #EAF4FF; color: #2B7EC0; border-color: #a8d0f0; }
+    .filters-bar .tag:hover { filter: brightness(.95); }
+
+    /* ─── TABLE ───────────────────────────────────────────────────────── */
+    .table-wrap {
+      background: #fff; border-radius: 12px; border: 1px solid #eee;
+      overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    }
+    .table-header {
+      padding: 14px 20px; border-bottom: 1px solid #f0f0f0;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .table-header .title { font-size: 15px; font-weight: 700; color: #222; }
+    .table-header .count-info { font-size: 13px; color: #888; }
+
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    thead th {
+      padding: 10px 10px;
+      text-align: left; font-size: 11px; font-weight: 700;
+      color: #888; text-transform: uppercase; letter-spacing: .5px;
+      background: #fafafa; border-bottom: 1px solid #eee;
+      white-space: nowrap; overflow: hidden;
+    }
+    thead th.sortable { cursor: pointer; user-select: none; }
+    thead th.sortable:hover { color: #FF5A00; }
+    thead th .sort-icon { margin-left: 3px; opacity: .5; }
+    thead th.sorted { color: #FF5A00; }
+    thead th.sorted .sort-icon { opacity: 1; }
+
+    /* column widths — fixed layout keeps score visible */
+    .col-prop    { width: 230px; }
+    .col-tipo    { width: 108px; }
+    .col-act     { width: 110px; }
+    .col-ultact  { width: 110px; }
+    .col-score   { width: 130px; }
+
+    tbody tr { border-bottom: 1px solid #f5f5f5; transition: background .12s; }
+    tbody tr:hover { background: #fff8f5; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody td { padding: 11px 10px; vertical-align: middle; overflow: hidden; }
+
+    /* property thumbnail + info */
+    .prop-cell { display: flex; align-items: center; gap: 10px; }
+    .prop-thumb {
+      width: 64px; height: 48px; border-radius: 7px; object-fit: cover;
+      background: #e8e8e8; flex-shrink: 0; overflow: hidden;
+    }
+    .prop-thumb-fallback {
+      width: 64px; height: 48px; border-radius: 7px;
+      background: #f0f0f0; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+    }
+    .prop-info { min-width: 0; }
+    .prop-info .ptitle {
+      font-weight: 600; color: #222; font-size: 12px; margin-bottom: 1px;
+      cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .prop-info .ptitle:hover { color: #FF5A00; text-decoration: underline; }
+    .prop-info .address { color: #999; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .prop-info .price { color: #444; font-size: 11px; font-weight: 600; margin-top: 1px; }
+
+    /* type+plan stacked */
+    .tipo-plan { display: flex; flex-direction: column; gap: 4px; }
+    .type-badge {
+      padding: 2px 7px; border-radius: 5px; font-size: 10px; font-weight: 600;
+      background: #f0f0f0; color: #555; white-space: nowrap; display: inline-block;
+    }
+    .plan-badge {
+      padding: 2px 7px; border-radius: 5px; font-size: 10px; font-weight: 600;
+      white-space: nowrap; display: inline-block;
+    }
+    .plan-badge.destacado { background: #FFF8E8; color: #C07800; }
+    .plan-badge.simple    { background: #F0F0F0; color: #666; }
+    .plan-badge.premium   { background: #F3EEFF; color: #7340C4; }
+
+    /* activity cell — consultas + visitas combined */
+    .act-cell { display: flex; flex-direction: column; gap: 4px; }
+    .act-row  { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #666; }
+    .act-row .av { font-weight: 700; font-size: 13px; color: #222; }
+    .act-row .al { color: #bbb; }
+    .act-row .tokko-lbl { color: #7340C4; font-size: 10px; font-weight: 600; }
+
+    /* last activity */
+    .last-act { font-size: 11px; }
+    .last-act .when { font-weight: 600; color: #333; white-space: nowrap; }
+    .last-act .favs { color: #aaa; font-size: 10px; margin-top: 2px; }
+
+    /* hot score */
+    .hot-score-cell { }
+    .hot-score-wrap { display: flex; align-items: center; gap: 6px; }
+    .score-chip {
+      display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 10px;
+      font-size: 14px; font-weight: 900; flex-shrink: 0;
+    }
+    .score-hot  .score-chip { background: #FFF0E8; color: #E8400C; }
+    .score-warm .score-chip { background: #FFFBEA; color: #D4820A; }
+    .score-cold .score-chip { background: #EAF4FF; color: #2B7EC0; }
+    .score-bar-wrap { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+    .hot-score-bar { width: 100%; height: 7px; border-radius: 4px; background: #eee; overflow: hidden; }
+    .hot-score-bar .fill { height: 100%; border-radius: 4px; transition: width .4s; }
+    .score-hot  .fill { background: linear-gradient(90deg, #FF5A00, #FF8C00); }
+    .score-warm .fill { background: linear-gradient(90deg, #F4A800, #FFD000); }
+    .score-cold .fill { background: linear-gradient(90deg, #4DA6F5, #A0CFFF); }
+    .hot-score-num { font-size: 11px; font-weight: 800; }
+    .score-hot  .hot-score-num { color: #E8400C; }
+    .score-warm .hot-score-num { color: #D4820A; }
+    .score-cold .hot-score-num { color: #2B7EC0; }
+    .heat-label { font-size: 9px; color: #bbb; text-transform: uppercase; letter-spacing: .4px; }
+
+    /* ─── LEGEND / INFO BAND ─────────────────────────────────────────── */
+    .info-band {
+      background: #FFF8F5; border: 1px solid #FFD8C0; border-radius: 8px;
+      padding: 10px 16px; margin-bottom: 18px;
+      font-size: 12px; color: #AA4000;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    /* ─── TOKKO TAG ──────────────────────────────────────────────────── */
+    .tokko-tag {
+      display: inline-flex; align-items: center; gap: 3px;
+      background: #F3EEFF; color: #7340C4; border-radius: 4px;
+      padding: 2px 6px; font-size: 10px; font-weight: 700;
+    }
+
+    /* ─── RESPONSIVE HIDE ────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { padding: 16px; }
+    }
+
+    /* ─── PHOTO STRIP INTERACTIVO ────────────────────────────────────── */
+    .heat-card .photo-strip img,
+    .heat-card .photo-strip .more-count {
+      cursor: pointer; transition: transform .15s, box-shadow .15s;
+    }
+    .heat-card .photo-strip img:hover { transform: scale(1.06); box-shadow: 0 4px 12px rgba(0,0,0,.18); }
+
+    /* ─── MODAL OVERLAY ──────────────────────────────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(0,0,0,.45);
+      align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; animation: fadeIn .18s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal {
+      background: #fff; border-radius: 16px;
+      width: 100%; max-width: 480px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.22);
+      overflow: hidden;
+      animation: slideUp .2s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(14px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* foto hero */
+    .modal-hero { position: relative; height: 200px; overflow: hidden; }
+    .modal-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .modal-hero .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,.55) 100%);
+    }
+    .modal-hero .hero-badge {
+      position: absolute; top: 14px; left: 14px;
+      padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+    }
+    .modal-hero .hero-badge.hot  { background: #FFF0E8; color: #C03000; }
+    .modal-hero .hero-badge.warm { background: #FFF8E0; color: #A05800; }
+    .modal-hero .hero-badge.cold { background: #E8F3FF; color: #0D5EA8; }
+    .modal-hero .hero-score {
+      position: absolute; top: 14px; right: 14px;
+      width: 42px; height: 42px; border-radius: 10px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 900; line-height: 1; gap: 1px;
+    }
+    .modal-hero .hero-score.hot  { background: rgba(192,48,0,.9); color: #fff; }
+    .modal-hero .hero-score.warm { background: rgba(160,88,0,.9); color: #fff; }
+    .modal-hero .hero-score.cold { background: rgba(13,94,168,.9); color: #fff; }
+    .modal-hero .hero-score span { font-size: 9px; font-weight: 600; opacity: .8; }
+    .modal-hero .hero-title {
+      position: absolute; bottom: 14px; left: 14px; right: 14px;
+      color: #fff; font-size: 16px; font-weight: 700; line-height: 1.3;
+    }
+    .modal-close {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(0,0,0,.35); border: none; border-radius: 50%;
+      width: 30px; height: 30px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 16px; font-weight: 700; z-index: 2;
+      transition: background .15s;
+    }
+    .modal-close:hover { background: rgba(0,0,0,.6); }
+
+    /* body del modal */
+    .modal-body { padding: 20px 22px 22px; }
+
+    .modal-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+    .modal-tag {
+      padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 600;
+    }
+    .modal-tag.tipo    { background: #f0f0f0; color: #555; }
+    .modal-tag.op      { background: #E8F5E9; color: #2E7D32; }
+    .modal-tag.plan    { background: #FFF8E8; color: #C07800; }
+    .modal-tag.premium { background: #F3EEFF; color: #7340C4; }
+    .modal-tag.simple  { background: #f0f0f0; color: #666; }
+
+    .modal-price {
+      font-size: 22px; font-weight: 800; color: #222; margin-bottom: 4px;
+    }
+    .modal-address {
+      font-size: 13px; color: #888; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 4px;
+    }
+
+    .modal-stats {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
+      background: #fafafa; border-radius: 10px; padding: 14px;
+      margin-bottom: 16px; border: 1px solid #f0f0f0;
+    }
+    .modal-stat { text-align: center; }
+    .modal-stat .sv { font-size: 20px; font-weight: 800; color: #222; }
+    .modal-stat .sl { font-size: 10px; color: #aaa; margin-top: 2px; text-transform: uppercase; letter-spacing: .4px; }
+    .modal-stat .st { font-size: 10px; color: #7340C4; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<!-- ╔══════════════════════════════ TOP NAV ══════════════════════════════╗ -->
+<header class="topnav">
+  <div class="logo">
+    <div style="font-size:26px">🟠</div>
+    <span class="logo-text">zonaprop</span>
+  </div>
+  <nav>
+    <a href="#">Mis avisos</a>
+    <a href="#">Interesados <span class="badge">50</span></a>
+    <a href="#" class="active">Estadísticas</a>
+    <a href="#">Mi ejecutivo</a>
+    <a href="#">Comprar</a>
+  </nav>
+  <div class="right">
+    <span style="font-size:20px;cursor:pointer">🔔</span>
+    <button class="btn-pub">Publicar</button>
+    <div class="avatar">A</div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- ╔══════════════════════════ SIDEBAR ══════════════════════════════╗ -->
+  <aside class="sidebar">
+    <div class="agency-card">
+      <div class="agency-logo">RP<br>ROMERO</div>
+      <div class="agency-name">Romero Propiedades</div>
+    </div>
+    <nav>
+      <a href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Reputación
+      </a>
+      <a href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Rendimiento
+      </a>
+      <a href="#" class="active">
+        <!-- thermometer icon -->
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
+        </svg>
+        TermoProp 🔥
+      </a>
+    </nav>
+  </aside>
+
+  <!-- ╔══════════════════════════ MAIN ═════════════════════════════════╗ -->
+  <main class="main">
+
+    <!-- Header -->
+    <div class="page-header">
+      <h1>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF5A00" stroke-width="2.2">
+          <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
+        </svg>
+        TermoProp
+        <span style="background:#FFF0E8;color:#E8400C;font-size:13px;padding:3px 10px;border-radius:20px;font-weight:600;">BETA</span>
+      </h1>
+      <div class="sub">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        La información se actualiza cada 24 hs · Datos cruzados con
+        <span class="tokko-tag">⚡ Tokko Broker</span>
+      </div>
+    </div>
+
+    <!-- Info band -->
+    <div class="info-band">
+      🌡️ El <strong>Hot Score</strong> combina: consultas recibidas, frecuencia de contacto, visitas agendadas (Tokko), favoritos y días desde la última actividad. Cuanto más alto, más cerca está de cerrarse.
+    </div>
+
+    <!-- ── HEAT CARDS ──────────────────────────────────────────────── -->
+    <div class="heat-cards">
+      <div class="heat-card hot">
+        <div class="heat-card-inner">
+          <div class="card-top">
+            <div class="icon">🔥</div>
+            <div class="badge-pill">Score ≥ 70</div>
+          </div>
+          <div class="info">
+            <div class="count" id="hotCount">4</div>
+            <div class="label">Muy Caliente</div>
+            <div class="desc">propiedades activas</div>
+          </div>
+          <div class="photo-strip" id="hotStrip"></div>
+        </div>
+      </div>
+      <div class="heat-card warm">
+        <div class="heat-card-inner">
+          <div class="card-top">
+            <div class="icon">🌡️</div>
+            <div class="badge-pill">Score 35–69</div>
+          </div>
+          <div class="info">
+            <div class="count" id="warmCount">7</div>
+            <div class="label">Templado</div>
+            <div class="desc">propiedades activas</div>
+          </div>
+          <div class="photo-strip" id="warmStrip"></div>
+        </div>
+      </div>
+      <div class="heat-card cold">
+        <div class="heat-card-inner">
+          <div class="card-top">
+            <div class="icon">❄️</div>
+            <div class="badge-pill">Score &lt; 35</div>
+          </div>
+          <div class="info">
+            <div class="count" id="coldCount">5</div>
+            <div class="label">Frío</div>
+            <div class="desc">propiedades activas</div>
+          </div>
+          <div class="photo-strip" id="coldStrip"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FILTERS BAR ─────────────────────────────────────────────── -->
+    <div class="filters-bar">
+      <span class="filter-label">Ver:</span>
+      <div class="tag-filter">
+        <span class="tag all"   onclick="filterHeat('all')">Todos (16)</span>
+        <span class="tag hot"   onclick="filterHeat('hot')">🔥 Muy caliente (4)</span>
+        <span class="tag warm"  onclick="filterHeat('warm')">🌡️ Templado (7)</span>
+        <span class="tag cold"  onclick="filterHeat('cold')">❄️ Frío (5)</span>
+      </div>
+      <div class="sep"></div>
+      <span class="filter-label">Operación:</span>
+      <select id="filterOp" onchange="applyFilters()">
+        <option value="">Todas</option>
+        <option>Venta</option>
+        <option>Alquiler</option>
+      </select>
+      <span class="filter-label">Tipo:</span>
+      <select id="filterType" onchange="applyFilters()">
+        <option value="">Todos</option>
+        <option>Departamento</option>
+        <option>Casa</option>
+        <option>Local</option>
+        <option>Oficina</option>
+      </select>
+    </div>
+
+    <!-- ── TABLE ─────────────────────────────────────────────────────── -->
+    <div class="table-wrap">
+      <div class="table-header">
+        <span class="title">Propiedades activas</span>
+        <span class="count-info" id="countInfo">Mostrando <strong>16</strong> avisos</span>
+      </div>
+      <table id="propTable">
+        <thead>
+          <tr>
+            <th class="col-prop">Propiedad</th>
+            <th class="col-tipo">Tipo / Destaque</th>
+            <th class="col-act sortable" onclick="sortBy('consultas')" id="th-consultas">
+              Actividad <span class="sort-icon">⇅</span>
+            </th>
+            <th class="col-ultact">Último contacto</th>
+            <th class="col-score sortable sorted" onclick="sortBy('score')" id="th-score">
+              Hot Score <span class="sort-icon">↓</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<script>
+/* ───────────────────────── PROPERTY PHOTOS (Unsplash real estate) ── */
+const propPhotos = {
+  1:  'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=128&h=96&fit=crop',
+  2:  'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=128&h=96&fit=crop',
+  3:  'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=128&h=96&fit=crop',
+  4:  'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=128&h=96&fit=crop',
+  5:  'https://images.unsplash.com/photo-1497366216548-37526070297c?w=128&h=96&fit=crop',
+  6:  'https://images.unsplash.com/photo-1522708323474-d813b4dc2e48?w=128&h=96&fit=crop',
+  7:  'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=128&h=96&fit=crop',
+  8:  'https://images.unsplash.com/photo-1484154218-e3bac7a40e27?w=128&h=96&fit=crop',
+  9:  'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=128&h=96&fit=crop',
+  10: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=128&h=96&fit=crop',
+  11: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=128&h=96&fit=crop',
+  12: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=128&h=96&fit=crop',
+  13: 'https://images.unsplash.com/photo-1523217582562-09d05ab1ee50?w=128&h=96&fit=crop',
+  14: 'https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=128&h=96&fit=crop',
+  15: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=128&h=96&fit=crop',
+  16: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=128&h=96&fit=crop',
+};
+
+/* ───────────────────────── MOCK DATA ───────────────────────────────────── */
+const properties = [
+  {
+    id: 1, emoji: "🏢",
+    title: "Duplex 3 hab. impecable", address: "José María Moreno 540, CABA",
+    price: "USD 200.000", op: "Venta",
+    tipo: "Departamento", plan: "Destacado", planType: "destacado", estado: "Activo",
+    consultas: 18, visitasTokko: 5, favoritos: 23, diasUltAct: 1,
+    ultimaAct: "Hoy, 10:30", periodos: "3/semana"
+  },
+  {
+    id: 2, emoji: "🏠",
+    title: "Casa con jardín 4 amb.", address: "Av. Rivadavia 3820, CABA",
+    price: "USD 320.000", op: "Venta",
+    tipo: "Casa", plan: "Destacado Premium", planType: "premium", estado: "Activo",
+    consultas: 22, visitasTokko: 8, favoritos: 41, diasUltAct: 0,
+    ultimaAct: "Hoy, 08:15", periodos: "5/semana"
+  },
+  {
+    id: 3, emoji: "🏢",
+    title: "Monoambiente reciclado", address: "Palermo Soho, Thames 1240",
+    price: "ARS 280.000/mes", op: "Alquiler",
+    tipo: "Departamento", plan: "Destacado", planType: "destacado", estado: "Activo",
+    consultas: 31, visitasTokko: 6, favoritos: 55, diasUltAct: 0,
+    ultimaAct: "Hoy, 14:05", periodos: "7/semana"
+  },
+  {
+    id: 4, emoji: "🏢",
+    title: "2 dormitorios con cochera", address: "Belgrano, Juramento 2140",
+    price: "USD 185.000", op: "Venta",
+    tipo: "Departamento", plan: "Destacado", planType: "destacado", estado: "Activo",
+    consultas: 14, visitasTokko: 4, favoritos: 18, diasUltAct: 2,
+    ultimaAct: "Ayer, 16:20", periodos: "2/semana"
+  },
+  {
+    id: 5, emoji: "🏪",
+    title: "Local comercial esquina", address: "Av. Corrientes 5400, CABA",
+    price: "ARS 450.000/mes", op: "Alquiler",
+    tipo: "Local", plan: "Destacado", planType: "destacado", estado: "Activo",
+    consultas: 9, visitasTokko: 3, favoritos: 11, diasUltAct: 3,
+    ultimaAct: "Hace 3 días", periodos: "2/semana"
+  },
+  {
+    id: 6, emoji: "🏢",
+    title: "3 amb. con amenities", address: "Puerto Madero, Pierina Dealessi 745",
+    price: "USD 480.000", op: "Venta",
+    tipo: "Departamento", plan: "Destacado Premium", planType: "premium", estado: "Activo",
+    consultas: 11, visitasTokko: 2, favoritos: 30, diasUltAct: 2,
+    ultimaAct: "Ayer, 11:00", periodos: "2/semana"
+  },
+  {
+    id: 7, emoji: "🏠",
+    title: "PH con terraza 150 m²", address: "Villa Crespo, Loyola 456",
+    price: "USD 215.000", op: "Venta",
+    tipo: "Casa", plan: "Simple", planType: "simple", estado: "Activo",
+    consultas: 7, visitasTokko: 1, favoritos: 9, diasUltAct: 5,
+    ultimaAct: "Hace 5 días", periodos: "1/semana"
+  },
+  {
+    id: 8, emoji: "🏢",
+    title: "Estudio amoblado, Recoleta", address: "Av. Callao 1500",
+    price: "ARS 320.000/mes", op: "Alquiler",
+    tipo: "Departamento", plan: "Destacado", planType: "destacado", estado: "Activo",
+    consultas: 5, visitasTokko: 1, favoritos: 7, diasUltAct: 6,
+    ultimaAct: "Hace 6 días", periodos: "1/semana"
+  },
+  {
+    id: 9, emoji: "🏠",
+    title: "Casa quinta con pileta", address: "Tortugas, Buenos Aires",
+    price: "USD 550.000", op: "Venta",
+    tipo: "Casa", plan: "Destacado Premium", planType: "premium", estado: "Activo",
+    consultas: 4, visitasTokko: 0, favoritos: 14, diasUltAct: 8,
+    ultimaAct: "Hace 8 días", periodos: "0/semana"
+  },
+  {
+    id: 10, emoji: "🏢",
+    title: "Departamento 60 m² 1 dorm.", address: "Conesa 2620, CABA",
+    price: "USD 2.000.000", op: "Venta",
+    tipo: "Departamento", plan: "Destacado", planType: "destacado", estado: "Activo",
+    consultas: 2, visitasTokko: 0, favoritos: 3, diasUltAct: 14,
+    ultimaAct: "Hace 14 días", periodos: "0/semana"
+  },
+  {
+    id: 11, emoji: "🏢",
+    title: "Penthouse con vista al río", address: "Costanera Norte 860",
+    price: "USD 750.000", op: "Venta",
+    tipo: "Departamento", plan: "Destacado Premium", planType: "premium", estado: "Activo",
+    consultas: 16, visitasTokko: 7, favoritos: 38, diasUltAct: 1,
+    ultimaAct: "Hoy, 09:40", periodos: "4/semana"
+  },
+  {
+    id: 12, emoji: "🏪",
+    title: "Oficina 80 m² en torre", address: "Microcentro, Florida 1050",
+    price: "ARS 600.000/mes", op: "Alquiler",
+    tipo: "Oficina", plan: "Simple", planType: "simple", estado: "Activo",
+    consultas: 6, visitasTokko: 2, favoritos: 8, diasUltAct: 4,
+    ultimaAct: "Hace 4 días", periodos: "1/semana"
+  },
+  {
+    id: 13, emoji: "🏠",
+    title: "Casa 5 amb. Nordelta", address: "Los Robles 234, Nordelta",
+    price: "USD 420.000", op: "Venta",
+    tipo: "Casa", plan: "Destacado", planType: "destacado", estado: "Activo",
+    consultas: 12, visitasTokko: 3, favoritos: 16, diasUltAct: 2,
+    ultimaAct: "Ayer, 15:30", periodos: "3/semana"
+  },
+  {
+    id: 14, emoji: "🏢",
+    title: "2 amb. semi-piso Palermo", address: "Thames 1820, Palermo",
+    price: "ARS 380.000/mes", op: "Alquiler",
+    tipo: "Departamento", plan: "Destacado", planType: "destacado", estado: "Activo",
+    consultas: 19, visitasTokko: 5, favoritos: 28, diasUltAct: 1,
+    ultimaAct: "Hoy, 12:10", periodos: "4/semana"
+  },
+  {
+    id: 15, emoji: "🏪",
+    title: "Galpón logístico 600 m²", address: "Av. Gral. Paz 4500, CABA",
+    price: "ARS 900.000/mes", op: "Alquiler",
+    tipo: "Local", plan: "Simple", planType: "simple", estado: "Activo",
+    consultas: 1, visitasTokko: 0, favoritos: 2, diasUltAct: 20,
+    ultimaAct: "Hace 20 días", periodos: "0/semana"
+  },
+  {
+    id: 16, emoji: "🏢",
+    title: "Loft industrial Barracas", address: "Av. Montes de Oca 730",
+    price: "USD 165.000", op: "Venta",
+    tipo: "Departamento", plan: "Simple", planType: "simple", estado: "Activo",
+    consultas: 3, visitasTokko: 0, favoritos: 5, diasUltAct: 10,
+    ultimaAct: "Hace 10 días", periodos: "0/semana"
+  }
+];
+
+/* ──────────────────────── HOT SCORE ALGORITHM ─────────────────────────── */
+function calcScore(p) {
+  const consultaScore  = Math.min(p.consultas * 2.5, 35);
+  const visitaScore    = Math.min(p.visitasTokko * 6, 25);
+  const favScore       = Math.min(p.favoritos * 0.4, 15);
+  const decayPenalty   = Math.min(p.diasUltAct * 3.5, 25);
+  const raw = consultaScore + visitaScore + favScore - decayPenalty;
+  return Math.max(2, Math.min(100, Math.round(raw)));
+}
+
+function heatLevel(score) {
+  if (score >= 70) return 'hot';
+  if (score >= 35) return 'warm';
+  return 'cold';
+}
+function heatEmoji(score) {
+  if (score >= 70) return '🔥';
+  if (score >= 35) return '🌡️';
+  return '❄️';
+}
+
+/* Pre-calculate scores */
+properties.forEach(p => { p.score = calcScore(p); p.heat = heatLevel(p.score); });
+
+/* ──────────────────────── STATE ───────────────────────────────────────── */
+let currentSort   = { key: 'score', dir: 'desc' };
+let currentFilter = 'all';
+
+/* ──────────────────────── SORT ────────────────────────────────────────── */
+function sortBy(key) {
+  if (currentSort.key === key) {
+    currentSort.dir = currentSort.dir === 'desc' ? 'asc' : 'desc';
+  } else {
+    currentSort.key = key;
+    currentSort.dir = 'desc';
+  }
+  renderTable();
+  updateSortHeaders();
+}
+
+function updateSortHeaders() {
+  ['consultas','score'].forEach(k => {
+    const th = document.getElementById('th-' + k);
+    if (!th) return;
+    const icon = th.querySelector('.sort-icon');
+    th.classList.toggle('sorted', currentSort.key === k);
+    if (currentSort.key === k) {
+      icon.textContent = currentSort.dir === 'desc' ? '↓' : '↑';
+    } else {
+      icon.textContent = '⇅';
+    }
+  });
+}
+
+/* ──────────────────────── FILTER ──────────────────────────────────────── */
+function filterHeat(level) {
+  currentFilter = level;
+  document.querySelectorAll('.tag').forEach(t => t.classList.remove('all'));
+  event.target.classList.add('all');
+  renderTable();
+}
+
+function applyFilters() { renderTable(); }
+
+function getFiltered() {
+  let data = [...properties];
+  const op   = document.getElementById('filterOp').value;
+  const tipo = document.getElementById('filterType').value;
+  if (currentFilter !== 'all') data = data.filter(p => p.heat === currentFilter);
+  if (op)   data = data.filter(p => p.op === op);
+  if (tipo) data = data.filter(p => p.tipo === tipo);
+  return data;
+}
+
+/* ──────────────────────── RENDER PHOTO STRIPS ─────────────────────────── */
+function renderStrips() {
+  ['hot','warm','cold'].forEach(lvl => {
+    const sorted = [...properties]
+      .filter(p => p.heat === lvl)
+      .sort((a,b) => b.score - a.score)
+      .slice(0, 3);
+    const extra = properties.filter(p => p.heat === lvl).length - 3;
+    const strip = document.getElementById(lvl + 'Strip');
+    if (!strip) return;
+    strip.innerHTML = sorted.map(p =>
+      `<img src="${propPhotos[p.id]}" alt="${p.title}" title="${p.title}"
+            onclick="openModal(${p.id})"
+            onerror="this.style.display='none'">`
+    ).join('') + (extra > 0
+      ? `<div class="more-count">+${extra}</div>` : '');
+    // update count
+    const cnt = document.getElementById(lvl + 'Count');
+    if (cnt) cnt.textContent = properties.filter(p => p.heat === lvl).length;
+  });
+}
+
+/* ──────────────────────── RENDER TABLE ────────────────────────────────── */
+function renderTable() {
+  let data = getFiltered();
+  const { key, dir } = currentSort;
+  data.sort((a, b) => {
+    let av = a[key], bv = b[key];
+    if (key === 'consultas') { av = a.consultas; bv = b.consultas; }
+    return dir === 'desc' ? bv - av : av - bv;
+  });
+
+  document.getElementById('countInfo').innerHTML =
+    `Mostrando <strong>${data.length}</strong> aviso${data.length !== 1 ? 's' : ''}`;
+
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = data.map(p => {
+    const pct  = p.score;
+    const lvl  = p.heat;
+    const heatLabels = { hot: 'Muy caliente', warm: 'Templado', cold: 'Frío' };
+    const imgSrc = propPhotos[p.id];
+    const thumbHtml = `<img class="prop-thumb" src="${imgSrc}" alt=""
+        onerror="this.outerHTML='<div class=\\'prop-thumb-fallback\\'>${p.emoji}</div>'">`;
+    return `
+    <tr>
+      <td>
+        <div class="prop-cell">
+          ${thumbHtml}
+          <div class="prop-info">
+            <div class="ptitle">${p.title}</div>
+            <div class="address">${p.address}</div>
+            <div class="price">${p.op} · ${p.price}</div>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="tipo-plan">
+          <span class="type-badge">${p.tipo}</span>
+          <span class="plan-badge ${p.planType}">${p.plan}</span>
+        </div>
+      </td>
+      <td>
+        <div class="act-cell">
+          <div class="act-row">
+            <span class="av">${p.consultas}</span>
+            <span class="al">consultas</span>
+          </div>
+          <div class="act-row">
+            <span class="tokko-lbl">⚡</span>
+            <span class="av">${p.visitasTokko}</span>
+            <span class="al">visitas Tokko</span>
+          </div>
+          <div class="act-row" style="color:#bbb;font-size:10px;">📩 ${p.periodos}</div>
+        </div>
+      </td>
+      <td>
+        <div class="last-act">
+          <div class="when">${p.ultimaAct}</div>
+          <div class="favs">${p.favoritos} ❤️ favoritos</div>
+        </div>
+      </td>
+      <td class="hot-score-cell">
+        <div class="hot-score-wrap score-${lvl}">
+          <div class="score-chip">${pct}</div>
+          <div class="score-bar-wrap">
+            <div class="hot-score-bar"><div class="fill" style="width:${pct}%"></div></div>
+            <div class="heat-label">${heatLabels[lvl]}</div>
+          </div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+/* ──────────────────────── INIT ────────────────────────────────────────── */
+renderStrips();
+renderTable();
+
+/* ──────────────────────── MODAL ────────────────────────────────────────── */
+const overlay = document.getElementById('modalOverlay');
+
+function openModal(propId) {
+  const p = properties.find(x => x.id === propId);
+  if (!p) return;
+
+  const lvl  = p.heat;
+  const score = p.score;
+  const heatLabel = { hot: '🔥 Muy caliente', warm: '🌡️ Templado', cold: '❄️ Frío' }[lvl];
+  const planClass = p.planType;
+
+  document.getElementById('mHero').src        = propPhotos[p.id];
+  document.getElementById('mHero').alt        = p.title;
+  document.getElementById('mHeatBadge').className  = `hero-badge ${lvl}`;
+  document.getElementById('mHeatBadge').textContent = heatLabel;
+  document.getElementById('mScore').className  = `hero-score ${lvl}`;
+  document.getElementById('mScoreNum').textContent  = score;
+  document.getElementById('mTitle').textContent     = p.title;
+  document.getElementById('mPrice').textContent     = p.price;
+  document.getElementById('mAddress').textContent   = '📍 ' + p.address;
+
+  document.getElementById('mTipo').textContent = p.tipo;
+  document.getElementById('mOp').textContent   = p.op;
+  document.getElementById('mPlan').className   = `modal-tag ${planClass}`;
+  document.getElementById('mPlan').textContent = p.plan;
+
+  document.getElementById('mConsultas').textContent  = p.consultas;
+  document.getElementById('mVisitas').textContent    = p.visitasTokko;
+  document.getElementById('mFavoritos').textContent  = p.favoritos;
+  document.getElementById('mUltAct').textContent     = p.ultimaAct;
+  document.getElementById('mPeriodo').textContent    = p.periodos;
+
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+
+<!-- ══════════════════════════ MODAL ══════════════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-hero">
+      <img id="mHero" src="" alt="">
+      <div class="hero-overlay"></div>
+      <span id="mHeatBadge" class="hero-badge hot"></span>
+      <div id="mScore" class="hero-score hot">
+        <div id="mScoreNum" style="font-size:16px;font-weight:900;"></div>
+        <span>score</span>
+      </div>
+      <div id="mTitle" class="hero-title"></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-tags">
+        <span id="mTipo" class="modal-tag tipo"></span>
+        <span id="mOp"   class="modal-tag op"></span>
+        <span id="mPlan" class="modal-tag plan"></span>
+      </div>
+
+      <div class="modal-price" id="mPrice"></div>
+      <div class="modal-address" id="mAddress"></div>
+
+      <div class="modal-stats">
+        <div class="modal-stat">
+          <div class="sv" id="mConsultas">—</div>
+          <div class="sl">Consultas</div>
+        </div>
+        <div class="modal-stat">
+          <div class="sv" id="mVisitas">—</div>
+          <div class="sl">Visitas</div>
+          <div class="st">⚡ Tokko</div>
+        </div>
+        <div class="modal-stat">
+          <div class="sv" id="mFavoritos">—</div>
+          <div class="sl">Favoritos</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#888;padding:0 2px;">
+        <span>📩 Frecuencia: <strong id="mPeriodo" style="color:#555;"></strong></span>
+        <span>🕐 <strong id="mUltAct" style="color:#555;"></strong></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
