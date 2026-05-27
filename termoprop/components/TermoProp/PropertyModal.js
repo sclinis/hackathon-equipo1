@@ -386,7 +386,7 @@ export default function PropertyModal({ property, onClose }) {
           <TokkoSection>
             <TokkoLogo src="/tokko-broker-logo.png" alt="Tokko Broker" />
             <TokkoActions>
-              <TokkoCard as="a" href="https://app.tokkobroker.com/properties/visit?property_id=8086566" target="_blank" rel="noopener noreferrer">
+              <TokkoCard>
                 <TokkoCardIcon>📅</TokkoCardIcon>
                 <TokkoCardLabel>Gestionar visitas</TokkoCardLabel>
                 <TokkoCardSub>{p.visitasTokko} agendadas</TokkoCardSub>
