@@ -70,7 +70,7 @@ const CloseBtn = styled.button`
   &:hover { background: rgba(0,0,0,.6); }
 `;
 
-const Body = styled.div`padding: 16px 20px 24px;`;
+const Body = styled.div`padding: 12px 18px 18px;`;
 
 const Tags = styled.div`display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;`;
 
@@ -95,13 +95,13 @@ const Address = styled.div`font-size: 12px; color: #888; margin-bottom: 16px;`;
 
 /* ── STATS CON COMPARABLES ────────────────────────────────────────────── */
 const StatsGrid = styled.div`
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-  margin-bottom: 16px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px;
+  margin-bottom: 12px;
 `;
 
 const StatBox = styled.div`
   background: #f8f8f8; border: 1px solid #ededed;
-  border-radius: 12px; padding: 12px 10px;
+  border-radius: 10px; padding: 9px 8px;
 `;
 
 const SBLabel = styled.div`font-size: 11px; color: #888; font-weight: 500; margin-bottom: 2px;`;
@@ -120,28 +120,28 @@ const SBBadge = styled.span`
 /* ── SECCIÓN TOKKO ────────────────────────────────────────────────────── */
 const TokkoSection = styled.div`
   background: #f9f9f9; border: 1px solid #ededed;
-  border-radius: 14px; padding: 14px 14px 12px;
-  margin-bottom: 16px;
+  border-radius: 12px; padding: 10px 12px 10px;
+  margin-bottom: 12px;
 `;
 
 const TokkoLogo = styled.img`
-  height: 32px; width: auto; display: block; margin-bottom: 12px;
+  height: 22px; width: auto; display: block; margin-bottom: 8px;
 `;
 
 const TokkoActions = styled.div`
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
 `;
 
 const TokkoCard = styled.button`
-  background: #fff; border: 1px solid #e8e8e8; border-radius: 10px;
-  padding: 12px 8px; cursor: pointer; text-align: center;
+  background: #fff; border: 1px solid #e8e8e8; border-radius: 9px;
+  padding: 8px 6px; cursor: pointer; text-align: center;
   transition: border-color .15s, background .15s;
   &:hover { border-color: #CC4422; background: #FFF5F3; }
 `;
 
-const TokkoCardIcon = styled.div`font-size: 20px; margin-bottom: 5px;`;
-const TokkoCardLabel = styled.div`font-size: 11px; font-weight: 700; color: #222; line-height: 1.3;`;
-const TokkoCardSub   = styled.div`font-size: 10px; color: #aaa; margin-top: 2px;`;
+const TokkoCardIcon = styled.div`font-size: 16px; margin-bottom: 3px;`;
+const TokkoCardLabel = styled.div`font-size: 10px; font-weight: 700; color: #222; line-height: 1.3;`;
+const TokkoCardSub   = styled.div`font-size: 9px; color: #aaa; margin-top: 1px;`;
 
 /* ── CONSEJOS FLAT ────────────────────────────────────────────────────── */
 const ConsejosSectionTitle = styled.div`
