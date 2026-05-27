@@ -21,6 +21,8 @@ const AgencyCard = styled.div`
 const AgencyLogoImg = styled.img`
   width: 44px;
   height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 8px;
   object-fit: cover;
   display: block;
@@ -99,6 +101,8 @@ function AgencyLogo() {
     <AgencyLogoImg
       src="./facciolo-logo.png"
       alt="Facciolo Propiedades"
+      width={44}
+      height={44}
       onError={() => setBroken(true)}
     />
   );
