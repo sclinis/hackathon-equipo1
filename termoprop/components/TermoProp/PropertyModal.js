@@ -353,7 +353,7 @@ export default function PropertyModal({ property, onClose }) {
               <SBCompLabel>Similares {p.op === 'Alquiler' ? 'alquiladas' : 'vendidas'} necesitaron</SBCompLabel>
               <SBCompRow>
                 <SBCompVal>{insight.consultas}</SBCompVal>
-                <SBBadge $ok={consultasOk}>{consultasOk ? 'Normal' : 'Excedido'}</SBBadge>
+                <SBBadge $ok={consultasOk}>{consultasOk ? 'Excedido' : 'Normal'}</SBBadge>
               </SBCompRow>
             </StatBox>
 
@@ -365,7 +365,7 @@ export default function PropertyModal({ property, onClose }) {
               <SBCompLabel>Similares {p.op === 'Alquiler' ? 'alquiladas' : 'vendidas'} necesitaron</SBCompLabel>
               <SBCompRow>
                 <SBCompVal>{insight.visitas}</SBCompVal>
-                <SBBadge $ok={visitasOk}>{visitasOk ? 'Normal' : 'Excedido'}</SBBadge>
+                <SBBadge $ok={visitasOk}>{visitasOk ? 'Excedido' : 'Normal'}</SBBadge>
               </SBCompRow>
             </StatBox>
 
